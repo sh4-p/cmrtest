@@ -606,33 +606,50 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
 
 ---
 
-## Phase 4: Business Logic & API (The "C" in MVC) ⏸️
+## Phase 4: Business Logic & API (The "C" in MVC) 🔄
 
-### 4.1. API Routes & Controllers ⏸️
+### 4.1. API Routes & Controllers 🔄
 **Hedef:** RESTful API endpoint'leri oluşturmak
 
-- ⏸️ **API Routes tanımlama**
-  - Dosya: `routes/api.php`
-  - Version prefix: `/api/v1/`
-  - Middleware: `auth:sanctum` (API token authentication)
-  - Resource routes:
-    ```php
-    Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
-        Route::apiResource('leads', LeadController::class);
-        Route::apiResource('contacts', ContactController::class);
-        Route::apiResource('companies', CompanyController::class);
-        Route::apiResource('deals', DealController::class);
-        Route::apiResource('tasks', TaskController::class);
-        Route::apiResource('activities', ActivityController::class);
+- ✅ **API Routes tanımlama**
+  - Dosya: `routes/api.php` ✅
+  - Laravel Sanctum API support installed ✅
+  - Middleware: `auth:sanctum` (API token authentication) ✅
+  - Resource routes created: ✅
+    - `/api/leads` (LeadController)
+    - `/api/contacts` (ContactController)
+    - `/api/companies` (CompanyController)
+    - `/api/deals` (DealController)
+    - `/api/tasks` (TaskController)
+    - `/api/activities` (ActivityController)
+  - Custom routes: ✅
+    - POST `/api/leads/{lead}/convert`
+    - PATCH `/api/deals/{deal}/stage`
+    - PATCH `/api/tasks/{task}/complete`
+    - GET `/api/dashboard/stats`
+    - GET `/api/activities/recent`
 
-        // Custom routes
-        Route::post('leads/{lead}/convert', [LeadController::class, 'convert']);
-        Route::patch('deals/{deal}/stage', [DealController::class, 'updateStage']);
-        Route::get('dashboard/stats', [DashboardController::class, 'stats']);
-    });
-    ```
+- ✅ **DashboardController oluşturma**
+  - File: `app/Http/Controllers/Api/DashboardController.php` ✅
+  - Method `stats()`: ✅
+    - Returns counts for leads, contacts, companies, deals, tasks
+    - Permission-based filtering (user sees only their data if no "view-all" permission)
+    - Lead status breakdown (total, new, converted)
+    - Deal metrics (total, active, total value)
+    - Task metrics (total, pending, overdue)
 
-- ⏸️ **LeadController oluşturma**
+- ✅ **ActivityController oluşturma**
+  - File: `app/Http/Controllers/Api/ActivityController.php` ✅
+  - Methods: ✅
+    - `index()`: Paginated list with filters (type, user_id, subject)
+    - `recent()`: Get recent activities for dashboard
+    - `store()`: Create new activity with validation
+    - `show()`: Single activity with relationships
+    - `update()`: Update activity
+    - `destroy()`: Delete activity
+  - Eager loading: user, subject (polymorphic) ✅
+
+- ⏸️ **LeadController oluşturma** (Skeleton created, implementation pending)
   - Komut: `php artisan make:controller Api/V1/LeadController --api`
   - Methods:
     - `index()`: Paginated list with filters
