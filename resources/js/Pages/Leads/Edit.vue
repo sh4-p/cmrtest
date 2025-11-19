@@ -1,14 +1,13 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { useApi } from '@/composables/useApi';
-import { useNotification } from '@/composables/useNotification';
 
 const props = defineProps({
-    lead: {
-        type: Object,
-        default: null,
+    leadId: {
+        type: [String, Number],
+        required: true,
     },
     users: {
         type: Array,
@@ -16,21 +15,20 @@ const props = defineProps({
     },
 });
 
-const { post, put, loading, error } = useApi();
+const { get, put, loading, error } = useApi();
 
-const isEdit = computed(() => !!props.lead);
-
+const lead = ref(null);
 const form = ref({
-    first_name: props.lead?.first_name || '',
-    last_name: props.lead?.last_name || '',
-    email: props.lead?.email || '',
-    phone: props.lead?.phone || '',
-    company: props.lead?.company || '',
-    job_title: props.lead?.job_title || '',
-    source: props.lead?.source || 'Website',
-    status: props.lead?.status || 'New',
-    assigned_to_id: props.lead?.assigned_to_id || null,
-    notes: props.lead?.notes || '',
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    company: '',
+    job_title: '',
+    source: 'Website',
+    status: 'New',
+    assigned_to_id: null,
+    notes: '',
 });
 
 const sourceOptions = ['Website', 'Referral', 'Social Media', 'Email Campaign', 'Trade Show', 'Cold Call', 'Other'];
@@ -38,25 +36,35 @@ const statusOptions = ['New', 'Contacted', 'Qualified', 'Lost', 'Converted'];
 
 const errors = ref({});
 
+const fetchLead = async () => {
+    try {
+        const response = await get(`/leads/${props.leadId}`);
+        lead.value = response;
+
+        // Populate form
+        form.value = {
+            first_name: response.first_name || '',
+            last_name: response.last_name || '',
+            email: response.email || '',
+            phone: response.phone || '',
+            company: response.company || '',
+            job_title: response.job_title || '',
+            source: response.source || 'Website',
+            status: response.status || 'New',
+            assigned_to_id: response.assigned_to_id || null,
+            notes: response.notes || '',
+        };
+    } catch (err) {
+        console.error('Error fetching lead:', err);
+    }
+};
+
 const handleSubmit = async () => {
     errors.value = {};
 
     try {
-        if (isEdit.value) {
-            await put(`/leads/${props.lead.id}`, form.value);
-            router.visit(route('leads.show', props.lead.id), {
-                onSuccess: () => {
-                    // Success notification will be shown by the notification system
-                }
-            });
-        } else {
-            const response = await post('/leads', form.value);
-            router.visit(route('leads.show', response.id), {
-                onSuccess: () => {
-                    // Success notification will be shown by the notification system
-                }
-            });
-        }
+        await put(`/leads/${props.leadId}`, form.value);
+        router.visit(route('leads.show', props.leadId));
     } catch (err) {
         if (err.response?.status === 422) {
             errors.value = err.response.data.errors || {};
@@ -65,17 +73,21 @@ const handleSubmit = async () => {
 };
 
 const handleCancel = () => {
-    router.visit(route('leads.index'));
+    router.visit(route('leads.show', props.leadId));
 };
+
+onMounted(() => {
+    fetchLead();
+});
 </script>
 
 <template>
-    <Head :title="isEdit ? 'Edit Lead' : 'Create Lead'" />
+    <Head title="Edit Lead" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                {{ isEdit ? 'Edit Lead' : 'Create Lead' }}
+                Edit Lead
             </h2>
         </template>
 
@@ -263,7 +275,7 @@ const handleCancel = () => {
                                 :disabled="loading"
                             >
                                 <div v-if="loading" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                                {{ isEdit ? 'Update Lead' : 'Create Lead' }}
+                                Update Lead
                             </button>
                         </div>
                     </form>
