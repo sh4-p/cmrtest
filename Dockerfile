@@ -22,7 +22,7 @@ RUN npm run build
 # ==============================================================================
 FROM php:8.4-fpm
 
-# Install system dependencies
+# Install system dependencies including OpenSSL 3.x
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -33,9 +33,15 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
     libpq-dev \
+    libssl-dev \
+    openssl \
+    ca-certificates \
     supervisor \
     cron \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Verify OpenSSL version (should be 3.x)
+RUN openssl version
 
 # Install PHP extensions
 RUN docker-php-ext-install \
