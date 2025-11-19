@@ -365,10 +365,10 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
     - `subject()`: morphTo()
   - Scope: `recent()`, `byType()`
 
-### 2.2. Define Model Relationships ⏸️
+### 2.2. Define Model Relationships ✅
 **Hedef:** Eloquent ilişkilerini tamamlamak
 
-- ⏸️ **User Model relationships**
+- ✅ **User Model relationships**
   - `app/Models/User.php` dosyasını aç
   - İlişkileri ekle:
     ```php
@@ -392,13 +392,13 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
     }
     ```
 
-- ⏸️ **Tüm modellerdeki relationships'i kontrol et**
+- ✅ **Tüm modellerdeki relationships'i kontrol et**
   - Her model dosyasını gözden geçir
   - Eksik relationship'leri ekle
   - Inverse relationship'leri kontrol et
   - Eager loading için `with` property'lerini tanımla (performans için)
 
-- ⏸️ **Migration'ları çalıştır ve test et**
+- ⏸️ **Migration'ları çalıştır ve test et** (Skipped - database not available in current environment)
   - `php artisan migrate:fresh`
   - Tinker ile test: `php artisan tinker`
   - Test senaryoları:
@@ -411,10 +411,11 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
     $contact->company; // Should return company
     ```
 
-- ⏸️ **Factory'leri oluştur**
+- ✅ **Factory'leri oluştur**
   - Her model için factory: `php artisan make:factory CompanyFactory`
   - Realistic fake data tanımla
   - Test ve seeding için kullan
+  - DealStageSeeder oluşturuldu (default pipeline stages)
 
 ---
 
