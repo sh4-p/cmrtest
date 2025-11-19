@@ -7,8 +7,10 @@ help:
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@echo ""
 	@echo "  Development Commands:"
-	@echo "    make dev          - Start development environment with HMR"
-	@echo "    make install      - Initial setup (deps + migrate + seed)"
+	@echo "    make install      - Initial setup (deps + migrate + seed + build)"
+	@echo "    make dev          - Start development environment (no HMR)"
+	@echo "    make dev-hmr      - Start with Vite HMR (local dev only)"
+	@echo "    make build-assets - Build frontend assets for production"
 	@echo "    make up           - Start all containers"
 	@echo "    make down         - Stop all containers"
 	@echo "    make restart      - Restart all containers"
@@ -39,14 +41,33 @@ help:
 	@echo ""
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-# Development environment with Vite HMR
+# Development environment (production build, recommended for Codespaces)
 dev:
 	@echo "🚀 Starting development environment..."
+	cp -n .env.docker .env || true
+	docker-compose up -d
+	@echo "✅ Development environment started!"
+	@echo "📱 Application: http://localhost:8080"
+	@echo "💡 Using production build (no HMR)"
+	@echo "   For HMR support: make dev-hmr"
+
+# Development environment with Vite HMR (local development only)
+dev-hmr:
+	@echo "🚀 Starting development environment with HMR..."
 	cp -n .env.docker .env || true
 	docker-compose --profile dev up -d
 	@echo "✅ Development environment started!"
 	@echo "📱 Application: http://localhost:8080"
 	@echo "⚡ Vite HMR: http://localhost:5173"
+	@echo ""
+	@echo "⚠️  Note: HMR may not work in Codespaces/cloud IDEs"
+	@echo "   If you see blank page, use 'make dev' instead"
+
+# Build frontend assets
+build-assets:
+	@echo "🏗️  Building frontend assets..."
+	docker-compose exec app npm run build
+	@echo "✅ Assets built successfully!"
 
 # Production environment
 prod:
@@ -121,6 +142,8 @@ install: up wait-for-db
 	@echo "📦 Installing dependencies..."
 	docker-compose exec app composer install
 	docker-compose exec app npm install
+	@echo "🏗️  Building frontend assets..."
+	docker-compose exec app npm run build
 	@echo "🔑 Generating application key..."
 	docker-compose exec app php artisan key:generate
 	@echo "🗃️  Running migrations..."
@@ -130,6 +153,9 @@ install: up wait-for-db
 	@echo "✅ Installation completed!"
 	@echo "📱 Visit: http://localhost:8080"
 	@echo "👤 Login: admin@crm.test / password"
+	@echo ""
+	@echo "💡 Note: Using production build (no HMR)"
+	@echo "   To enable HMR: make dev-hmr"
 
 # Run migrations
 migrate:
