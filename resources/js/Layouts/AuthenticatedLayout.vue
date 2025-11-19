@@ -5,6 +5,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import GlobalSearch from '@/Components/GlobalSearch.vue';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
@@ -39,12 +40,53 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    :href="route('leads.index')"
+                                    :active="route().current('leads.*')"
+                                >
+                                    Leads
+                                </NavLink>
+                                <NavLink
+                                    :href="route('contacts.index')"
+                                    :active="route().current('contacts.*')"
+                                >
+                                    Contacts
+                                </NavLink>
+                                <NavLink
+                                    :href="route('companies.index')"
+                                    :active="route().current('companies.*')"
+                                >
+                                    Companies
+                                </NavLink>
+                                <NavLink
+                                    :href="route('deals.index')"
+                                    :active="route().current('deals.*')"
+                                >
+                                    Deals
+                                </NavLink>
+                                <NavLink
+                                    :href="route('tasks.index')"
+                                    :active="route().current('tasks.*')"
+                                >
+                                    Tasks
+                                </NavLink>
+                                <NavLink
+                                    :href="route('activities.index')"
+                                    :active="route().current('activities.*')"
+                                >
+                                    Activities
+                                </NavLink>
                             </div>
                         </div>
 
-                        <div class="hidden sm:ms-6 sm:flex sm:items-center">
+                        <div class="hidden sm:ms-6 sm:flex sm:items-center sm:gap-4">
+                            <!-- Global Search -->
+                            <div class="w-80">
+                                <GlobalSearch />
+                            </div>
+
                             <!-- Settings Dropdown -->
-                            <div class="relative ms-3">
+                            <div class="relative">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
@@ -145,6 +187,42 @@ const showingNavigationDropdown = ref(false);
                             :active="route().current('dashboard')"
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('leads.index')"
+                            :active="route().current('leads.*')"
+                        >
+                            Leads
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('contacts.index')"
+                            :active="route().current('contacts.*')"
+                        >
+                            Contacts
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('companies.index')"
+                            :active="route().current('companies.*')"
+                        >
+                            Companies
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('deals.index')"
+                            :active="route().current('deals.*')"
+                        >
+                            Deals
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('tasks.index')"
+                            :active="route().current('tasks.*')"
+                        >
+                            Tasks
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('activities.index')"
+                            :active="route().current('activities.*')"
+                        >
+                            Activities
                         </ResponsiveNavLink>
                     </div>
 

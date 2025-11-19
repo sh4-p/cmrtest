@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DealController;
 use App\Http\Controllers\Api\LeadController;
+use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Dashboard
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
     Route::get('/activities/recent', [ActivityController::class, 'recent']);
+
+    // Global Search
+    Route::get('/search', [SearchController::class, 'search']);
 
     // CRM Resources
     Route::apiResource('leads', LeadController::class);
