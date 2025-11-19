@@ -1,0 +1,224 @@
+Project: Advanced CRM System - Detailed TODO List 
+
+This document outlines the development plan for a modern, mobile-first CRM system built on a PHP MVC architecture. 
+
+Core Technology Stack: 
+
+     Backend: PHP 8.3, Laravel 10 (or latest)
+     Frontend: HTML5, CSS3 (Tailwind CSS), JavaScript (ES6+), Vue.js 3
+     Database: MySQL 8.0 or PostgreSQL 15
+     Package Management: Composer (PHP), NPM (JS/CSS)
+     Development Environment: Docker & Docker Compose
+     Version Control: Git
+     
+
+Phase 0: Foundation & Project Setup 
+
+     
+
+    [ ] 0.1. Environment Setup: 
+         [ ] Install Docker and Docker Compose on the development machine.
+         [ ] Create a docker-compose.yml file to manage services (PHP-FPM, Nginx, MySQL/PostgreSQL, Redis).
+         [ ] Set up a new Laravel project (laravel new advanced-crm).
+         [ ] Configure .env file for database and other environment variables.
+         [ ] Initialize a Git repository and create initial commit. Set up a remote repository on GitHub/GitLab.
+         
+     
+
+    [ ] 0.2. Frontend Scaffolding: 
+         [ ] Install and configure Laravel Vite for asset bundling.
+         [ ] Install Tailwind CSS and its dependencies (npm install -D tailwindcss postcss autoprefixer). Configure tailwind.config.js.
+         [ ] Install Vue.js 3 (npm install vue). Set up Vite to handle .vue single-file components.
+         [ ] Install a UI component library that works well with Tailwind (e.g., Headless UI for accessible, unstyled components) or a pre-built theme like a Laravel Admin Panel starter kit (e.g., Laravel Jetstream/Breeze with Vue stack).
+         
+     
+
+    [ ] 0.3. Core Package Installation: 
+         [ ] Install a robust authentication package (e.g., Laravel Breeze or Jetstream with the livewire or inertia (Vue) stack).
+         [ ] Install a Roles & Permissions package (e.g., spatie/laravel-permission).
+         [ ] Install a Media Management package for file uploads (e.g., spatie/laravel-medialibrary).
+         
+     
+
+Phase 1: Authentication & Authorization (MVC Foundation) 
+
+     
+
+    [ ] 1.1. User Model & Migration: 
+         [ ] Review the default users table migration. Add fields like phone_number, avatar_id, is_active.
+         [ ] Define the User model. Implement the HasRoles trait from spatie/laravel-permission.
+         
+     
+
+    [ ] 1.2. Authentication (Controllers & Views): 
+         [ ] Utilize the scaffolding from Breeze/Jetstream to create Login, Registration, Password Reset, and Email Verification views and controllers.
+         [ ] Customize the views to match the desired CRM design using Blade, Tailwind CSS, and Vue components.
+         [ ] Implement Two-Factor Authentication (2FA) as an optional security feature.
+         
+     
+
+    [ ] 1.3. Roles & Permissions Setup: 
+         [ ] Create a seeder to define default roles: Super Admin, Admin, Manager, Sales Rep.
+         [ ] Define permissions: manage-users, view-leads, create-leads, delete-deals, view-reports, etc.
+         [ ] Create middleware to protect routes based on roles and permissions.
+         [ ] Build an admin interface (only accessible by Super Admins) to manage users and assign roles.
+         
+     
+
+Phase 2: Database Schema & Models (The "M" in MVC) 
+
+     
+
+    [ ] 2.1. Core CRM Entity Migrations & Models: 
+         [ ] Companies Table & Model:
+             name, industry, website, phone_number, address, owner_id (foreign key to users).
+             
+         [ ] Contacts Table & Model:
+             first_name, last_name, email, phone_number, company_id (foreign key), owner_id.
+             
+         [ ] Leads Table & Model:
+             first_name, last_name, email, phone_number, source (e.g., 'Website', 'Referral'), status (e.g., 'New', 'Contacted', 'Qualified'), assigned_to_id (foreign key to users), converted_to_contact_id (nullable foreign key).
+             
+         [ ] Deals Table & Model:
+             name, contact_id (foreign key), deal_stage_id (foreign key), amount, closing_date, probability, assigned_to_id.
+             
+         [ ] Deal Stages Table & Model:
+             name (e.g., 'Lead', 'Contacted', 'Proposal', 'Negotiation', 'Won', 'Lost'), order.
+             
+         [ ] Tasks Table & Model:
+             title, description, due_date, status ('Pending', 'Completed'), priority ('Low', 'Medium', 'High'), assigned_to_id, related_to_type ('Contact', 'Deal', 'Lead'), related_to_id.
+             
+         [ ] Activities Table & Model (Polymorphic):
+             description, type ('Call', 'Meeting', 'Email', 'Note'), user_id, subject_type ('Contact', 'Deal', 'Lead'), subject_id.
+             
+         
+     
+
+    [ ] 2.2. Define Model Relationships: 
+         [ ] In each model, define Eloquent relationships (hasMany, belongsTo, morphMany, etc.). For example:
+             User has many Companies, Contacts, Deals.
+             Company has many Contacts.
+             Contact has many Deals and Activities.
+             Deal belongs to a Contact and a DealStage.
+             Task and Activity are polymorphic, relating to Contact, Deal, or Lead.
+             
+         
+     
+
+Phase 3: Frontend & User Interface (The "V" in MVC) 
+
+     
+
+    [ ] 3.1. Layout & Design System: 
+         [ ] Design a master layout file (resources/views/layouts/app.blade.php). This should include:
+             A responsive top navigation bar (user menu, notifications, search).
+             A collapsible sidebar navigation (main CRM modules).
+             A main content area.
+             
+         [ ] Ensure the layout is mobile-first. The sidebar should collapse into a hamburger menu on smaller screens.
+         [ ] Create reusable Blade components for forms, buttons, alerts, modals, and cards.
+         
+     
+
+    [ ] 3.2. Vue.js Component Development: 
+         [ ] Create dynamic, interactive Vue components to replace static HTML where needed.
+         [ ] Data Table Component: A reusable, searchable, sortable, and paginated table component for listing Leads, Contacts, Deals, etc. This will fetch data via AJAX.
+         [ ] Kanban Board Component: A drag-and-drop Kanban board for visualizing and managing Deals through their different stages. This is a key "advanced" feature.
+         [ ] Modal Form Component: For creating and editing records (e.g., "New Lead" modal) without page reloads.
+         [ ] Dashboard Widgets: Vue components for charts (using a library like Chart.js or ApexCharts) and displaying key metrics.
+         
+     
+
+Phase 4: Business Logic & API (The "C" in MVC) 
+
+     
+
+    [ ] 4.1. API Routes & Controllers: 
+         [ ] Define API routes in routes/api.php. Use a version prefix (e.g., /api/v1/).
+         [ ] Create API Controllers for each module (e.g., app/Http/Controllers/Api/V1/LeadController.php).
+         [ ] Implement standard CRUD (Create, Read, Update, Delete) methods in each controller.
+             index(): Return a paginated list of resources.
+             store(): Validate and create a new resource.
+             show(): Return a single resource.
+             update(): Validate and update an existing resource.
+             destroy(): Delete a resource.
+             
+         
+     
+
+    [ ] 4.2. AJAX Integration (Connecting Vue to Laravel): 
+         [ ] In your Vue components, use axios or the native fetch API to make HTTP requests to the Laravel API endpoints defined in the previous step.
+         [ ] Handle loading states, success responses, and error responses gracefully in the Vue components.
+         [ ] Implement real-time search/filtering. As the user types in a search box, send an AJAX request to the API and update the data table component.
+         
+     
+
+    [ ] 4.3. Form Validation: 
+         [ ] Use Laravel's Form Request Validation for robust backend validation.
+         [ ] On the frontend, use a library like Vuelidate or implement custom validation logic to provide immediate user feedback before the form is even submitted.
+         
+     
+
+Phase 5: Advanced Features 
+
+     
+
+    [ ] 5.1. Dashboard: 
+         [ ] Create a main dashboard view.
+         [ ] Display key performance indicators (KPIs): New leads this month, deals won, total revenue, conversion rate.
+         [ ] Embed charts for sales pipeline, lead sources, and sales activity over time.
+         [ ] Show a list of recent activities and upcoming tasks.
+         
+     
+
+    [ ] 5.2. Search & Filtering: 
+         [ ] Implement a global search bar that can search across contacts, companies, and deals.
+         [ ] Add advanced filtering options to the data table components (e.g., filter deals by stage, assigned user, or date range).
+         
+     
+
+    [ ] 5.3. Reporting: 
+         [ ] Create a dedicated reporting section.
+         [ ] Build reports for sales performance by user, lead conversion rates, and deal forecasts.
+         [ ] Allow reports to be exported to CSV or PDF.
+         
+     
+
+    [ ] 5.4. Notifications: 
+         [ ] Set up a notification system. When a task is assigned or a deal is updated, trigger a notification.
+         [ ] Store notifications in the database.
+         [ ] Display real-time in-app notifications in the top navbar. Use WebSockets (e.g., Laravel Reverb or Pusher) for true real-time updates.
+         [ ] Configure email notifications for important events.
+         
+     
+
+    [ ] 5.5. File Management: 
+         [ ] Integrate the media library package.
+         [ ] Allow users to upload and attach files (documents, images) to contacts, deals, and companies.
+         
+     
+
+Phase 6: Testing, Deployment & Maintenance 
+
+     
+
+    [ ] 6.1. Testing: 
+         [ ] Write Feature Tests using PHPUnit to test your API endpoints and critical application logic (e.g., "a user can create a lead," "an admin can delete a user").
+         [ ] Write Unit Tests for complex methods in your Models or Services.
+         [ ] Set up a testing framework like Jest or Vitest to test your Vue components.
+         
+     
+
+    [ ] 6.2. Deployment: 
+         [ ] Provision a production server (e.g., a VPS from DigitalOcean, Vultr, or a PaaS like Laravel Forge/Vapor).
+         [ ] Set up a CI/CD pipeline using GitHub Actions or GitLab CI to automatically run tests and deploy the application on merge to the main branch.
+         [ ] Configure the production environment variables (.env).
+         [ ] Set up a cron job for Laravel's task scheduler to handle recurring tasks (e.g., sending daily email digests).
+         
+     
+
+    [ ] 6.3. Maintenance: 
+         [ ] Set up monitoring and error tracking (e.g., Sentry, Flare).
+         [ ] Regularly update PHP, Laravel, and other dependencies to ensure security and stability.
+         
+     
