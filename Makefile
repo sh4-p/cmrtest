@@ -101,8 +101,23 @@ shell:
 db-shell:
 	docker-compose exec mysql mysql -u crm_user -pcrm_password advanced_crm
 
+# Wait for database to be ready
+wait-for-db:
+	@echo "⏳ Waiting for MySQL to be ready..."
+	@timeout=60; \
+	while ! docker-compose exec -T mysql mysqladmin ping -h localhost -u root -proot_password --silent 2>/dev/null; do \
+		timeout=$$((timeout - 1)); \
+		if [ $$timeout -le 0 ]; then \
+			echo "❌ MySQL failed to start in time"; \
+			exit 1; \
+		fi; \
+		echo "  Waiting for MySQL... ($$timeout seconds remaining)"; \
+		sleep 2; \
+	done
+	@echo "✅ MySQL is ready!"
+
 # Initial installation
-install: up
+install: up wait-for-db
 	@echo "📦 Installing dependencies..."
 	docker-compose exec app composer install
 	docker-compose exec app npm install
