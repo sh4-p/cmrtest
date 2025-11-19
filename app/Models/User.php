@@ -53,8 +53,55 @@ class User extends Authenticatable
         ];
     }
 
+    // =========================
+    // CRM Relationships
+    // =========================
+
     /**
-     * Relationships will be defined here as we build the CRM modules
-     * Example: companies(), contacts(), deals(), tasks(), activities()
+     * Companies owned by this user
      */
+    public function companies()
+    {
+        return $this->hasMany(Company::class, 'owner_id');
+    }
+
+    /**
+     * Contacts owned by this user
+     */
+    public function contacts()
+    {
+        return $this->hasMany(Contact::class, 'owner_id');
+    }
+
+    /**
+     * Leads assigned to this user
+     */
+    public function assignedLeads()
+    {
+        return $this->hasMany(Lead::class, 'assigned_to_id');
+    }
+
+    /**
+     * Deals assigned to this user
+     */
+    public function assignedDeals()
+    {
+        return $this->hasMany(Deal::class, 'assigned_to_id');
+    }
+
+    /**
+     * Tasks assigned to this user
+     */
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_to_id');
+    }
+
+    /**
+     * Activities performed by this user
+     */
+    public function activities()
+    {
+        return $this->hasMany(Activity::class);
+    }
 }

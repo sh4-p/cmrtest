@@ -217,10 +217,10 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
 
 ## Phase 2: Database Schema & Models (The "M" in MVC) ⏸️
 
-### 2.1. Core CRM Entity Migrations & Models ⏸️
+### 2.1. Core CRM Entity Migrations & Models ✅
 **Hedef:** CRM'in temel veri yapılarını oluşturmak
 
-- ⏸️ **Companies (Şirketler) - Migration & Model**
+- ✅ **Companies (Şirketler) - Migration & Model**
   - Migration oluştur: `php artisan make:migration create_companies_table`
   - Alan tanımlamaları:
     ```php
@@ -239,7 +239,7 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
   - `owner` relation: `belongsTo(User::class, 'owner_id')`
   - `contacts` relation: `hasMany(Contact::class)`
 
-- ⏸️ **Contacts (Kişiler) - Migration & Model**
+- ✅ **Contacts (Kişiler) - Migration & Model**
   - Migration oluştur: `php artisan make:migration create_contacts_table`
   - Alan tanımlamaları:
     ```php
@@ -262,7 +262,7 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
     - `activities()`: morphMany(Activity)
   - Accessor: `full_name` attribute
 
-- ⏸️ **Leads (Potansiyel Müşteriler) - Migration & Model**
+- ✅ **Leads (Potansiyel Müşteriler) - Migration & Model**
   - Migration oluştur: `php artisan make:migration create_leads_table`
   - Alan tanımlamaları:
     ```php
@@ -288,7 +288,7 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
     - `activities()`: morphMany(Activity)
   - Method: `convertToContact()`
 
-- ⏸️ **Deal Stages (Satış Aşamaları) - Migration & Model**
+- ✅ **Deal Stages (Satış Aşamaları) - Migration & Model**
   - Migration oluştur: `php artisan make:migration create_deal_stages_table`
   - Alan tanımlamaları:
     ```php
@@ -302,7 +302,7 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
   - Seeder oluştur: Default stage'leri ekle
   - Relationship: `deals()` hasMany
 
-- ⏸️ **Deals (Satışlar) - Migration & Model**
+- ✅ **Deals (Satışlar) - Migration & Model**
   - Migration oluştur: `php artisan make:migration create_deals_table`
   - Alan tanımlamaları:
     ```php
@@ -326,7 +326,7 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
     - `activities()`: morphMany(Activity)
   - Accessor: `expected_revenue` (amount * probability)
 
-- ⏸️ **Tasks (Görevler) - Migration & Model**
+- ✅ **Tasks (Görevler) - Migration & Model**
   - Migration oluştur: `php artisan make:migration create_tasks_table`
   - Alan tanımlamaları:
     ```php
@@ -347,7 +347,7 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
     - `relatedTo()`: morphTo()
   - Scope: `overdue()`, `completed()`, `pending()`
 
-- ⏸️ **Activities (Aktiviteler) - Migration & Model**
+- ✅ **Activities (Aktiviteler) - Migration & Model**
   - Migration oluştur: `php artisan make:migration create_activities_table`
   - Alan tanımlamaları:
     ```php
