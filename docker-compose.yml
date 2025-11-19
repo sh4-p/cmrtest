@@ -5,20 +5,29 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
-    image: advanced-crm-app
+      dockerfile: ${DOCKERFILE:-Dockerfile.dev}
+    image: advanced-crm-app:${APP_ENV:-dev}
     container_name: crm-app
     restart: unless-stopped
     tty: true
     environment:
       SERVICE_NAME: app
-      SERVICE_TAGS: dev
+      SERVICE_TAGS: ${APP_ENV:-dev}
+      PHP_IDE_CONFIG: serverName=Docker
     working_dir: /var/www
     volumes:
       - ./:/var/www
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    depends_on:
+      - mysql
+      - redis
     networks:
       - crm-network
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm -t || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # Nginx Service
   nginx:
@@ -27,13 +36,20 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "8080:80"
+      - "${APP_PORT:-8080}:80"
       - "443:443"
     volumes:
       - ./:/var/www
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    depends_on:
+      - app
     networks:
       - crm-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # MySQL Service
   mysql:
@@ -42,19 +58,24 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-3306}:3306"
     environment:
-      MYSQL_DATABASE: advanced_crm
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_PASSWORD: crm_password
-      MYSQL_USER: crm_user
-      SERVICE_TAGS: dev
+      MYSQL_DATABASE: ${DB_DATABASE:-advanced_crm}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-crm_password}
+      MYSQL_USER: ${DB_USERNAME:-crm_user}
+      SERVICE_TAGS: ${APP_ENV:-dev}
       SERVICE_NAME: mysql
     volumes:
       - mysql-data:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
     networks:
       - crm-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-root_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Redis Service
   redis:
@@ -62,24 +83,78 @@ services:
     container_name: crm-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis-data:/data
     networks:
       - crm-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
-  # Node Service (for frontend build)
+  # Node Service (for frontend development)
   node:
     image: node:20-alpine
     container_name: crm-node
     working_dir: /var/www
     volumes:
       - ./:/var/www
-    command: sh -c "npm install && npm run dev"
+      - /var/www/node_modules
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     ports:
-      - "5173:5173"
+      - "${VITE_PORT:-5173}:5173"
     networks:
       - crm-network
+    profiles:
+      - dev
+    environment:
+      - VITE_HMR_HOST=localhost
+
+  # Queue Worker Service (optional)
+  queue:
+    build:
+      context: .
+      dockerfile: ${DOCKERFILE:-Dockerfile.dev}
+    image: advanced-crm-app:${APP_ENV:-dev}
+    container_name: crm-queue
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - crm-network
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    profiles:
+      - queue
+
+  # Scheduler Service (optional)
+  scheduler:
+    build:
+      context: .
+      dockerfile: ${DOCKERFILE:-Dockerfile.dev}
+    image: advanced-crm-app:${APP_ENV:-dev}
+    container_name: crm-scheduler
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - crm-network
+    command: >
+      sh -c "while true; do
+        php artisan schedule:run --verbose --no-interaction &
+        sleep 60
+      done"
+    profiles:
+      - scheduler
 
 # Docker Networks
 networks:

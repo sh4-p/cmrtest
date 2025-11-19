@@ -115,6 +115,67 @@ php artisan serve
 
 Visit `http://localhost:8000` in your browser.
 
+## 🐳 Docker Installation (Recommended)
+
+The easiest way to run the CRM system is using Docker. All dependencies (PHP, Node.js, MySQL, Redis) are included.
+
+### Quick Start with Docker
+
+```bash
+# 1. Clone the repository
+git clone <repository-url>
+cd cmrtest
+
+# 2. Start development environment (one command!)
+make start
+
+# That's it! 🎉
+# Application: http://localhost:8080
+# Login: admin@crm.test / password
+```
+
+### Manual Docker Setup
+
+```bash
+# Copy Docker environment
+cp .env.docker .env
+
+# Start services with Vite HMR
+docker-compose --profile dev up -d
+
+# Install dependencies and setup
+docker-compose exec app composer install
+docker-compose exec app php artisan key:generate
+docker-compose exec app php artisan migrate:fresh --seed
+```
+
+### Available Make Commands
+
+```bash
+make help          # Show all available commands
+make dev           # Start development with HMR
+make prod          # Start production environment
+make install       # Initial setup (deps + migrate + seed)
+make migrate       # Run migrations
+make fresh         # Fresh database with seed data
+make test          # Run tests
+make shell         # Access container shell
+make db-backup     # Backup database
+make clean         # Clean cache and volumes
+```
+
+### Docker Services
+
+| Service | Port | Description |
+|---------|------|-------------|
+| Nginx | 8080 | Web server |
+| PHP-FPM | 9000 | Application (PHP 8.4) |
+| MySQL | 3306 | Database |
+| Redis | 6379 | Cache & Queue |
+| Vite | 5173 | Dev server (dev profile) |
+
+For detailed Docker documentation, see [docker/DOCKER_GUIDE.md](docker/DOCKER_GUIDE.md)
+
 ## Demo Users
 
 After running the DemoDataSeeder, you can log in with:
