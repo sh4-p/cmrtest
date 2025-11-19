@@ -4,16 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ActivityRequest;
+use AppHttpResourcesActivityResource;
 use App\Models\Activity;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use IlluminateHttpResourcesJsonAnonymousResourceCollection;
 
 class ActivityController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $query = Activity::with(['user', 'subject'])
             ->latest('activity_date');
@@ -36,7 +38,7 @@ class ActivityController extends Controller
 
         $activities = $query->paginate($request->get('per_page', 15));
 
-        return response()->json($activities);
+        return ActivityResource::collection($activities);
     }
 
     /**
@@ -52,14 +54,14 @@ class ActivityController extends Controller
             ->get();
 
         return response()->json([
-            'data' => $activities
+            ActivityResource::collection($activities)
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ActivityRequest $request): JsonResponse
+    public function store(ActivityRequest $request): ActivityResource
     {
         $validated = $request->validated();
 
@@ -68,27 +70,27 @@ class ActivityController extends Controller
 
         $activity = Activity::create($validated);
 
-        return response()->json($activity->load(['user', 'subject']), 201);
+        return ActivityResource::make($activity->load(['user', 'subject']));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Activity $activity): JsonResponse
+    public function show(Activity $activity): ActivityResource
     {
-        return response()->json($activity->load(['user', 'subject']));
+        return ActivityResource::make($activity->load(['user', 'subject']));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(ActivityRequest $request, Activity $activity): JsonResponse
+    public function update(ActivityRequest $request, Activity $activity): ActivityResource
     {
         $validated = $request->validated();
 
         $activity->update($validated);
 
-        return response()->json($activity->load(['user', 'subject']));
+        return ActivityResource::make($activity->load(['user', 'subject']));
     }
 
     /**

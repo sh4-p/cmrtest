@@ -1,0 +1,98 @@
+# Gitpod Configuration for Laravel CRM System
+
+image: gitpod/workspace-full
+
+# Ports configuration
+ports:
+  - port: 8000
+    onOpen: open-preview
+    visibility: public
+    description: Laravel Application
+  - port: 5173
+    onOpen: ignore
+    visibility: public
+    description: Vite Dev Server
+  - port: 3306
+    onOpen: ignore
+    visibility: private
+    description: MySQL Database
+
+# Tasks to run on workspace start
+tasks:
+  - name: Setup Laravel Environment
+    init: |
+      # Install PHP extensions if needed
+      sudo install-packages php-mysql php-xml php-mbstring php-zip php-gd php-curl
+
+      # Install Composer dependencies
+      composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      # Copy environment file if it doesn't exist
+      if [ ! -f .env ]; then
+        cp .env.example .env
+        php artisan key:generate
+      fi
+
+      # Install NPM dependencies
+      npm install
+
+      # Build frontend assets
+      npm run build
+
+      echo "✅ Laravel CRM System setup completed!"
+      echo "🚀 Run 'php artisan serve' to start the application"
+      echo "🎨 Run 'npm run dev' to start Vite dev server"
+
+    command: |
+      # Start MySQL service
+      mysql -u root -e "CREATE DATABASE IF NOT EXISTS laravel_crm;"
+      mysql -u root -e "CREATE USER IF NOT EXISTS 'laravel'@'localhost' IDENTIFIED BY 'secret';"
+      mysql -u root -e "GRANT ALL PRIVILEGES ON laravel_crm.* TO 'laravel'@'localhost';"
+      mysql -u root -e "FLUSH PRIVILEGES;"
+
+      # Update .env for Gitpod
+      sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+      sed -i 's/DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+      sed -i 's/DB_PORT=.*/DB_PORT=3306/' .env
+      sed -i 's/DB_DATABASE=.*/DB_DATABASE=laravel_crm/' .env
+      sed -i 's/DB_USERNAME=.*/DB_USERNAME=laravel/' .env
+      sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=secret/' .env
+
+      # Run migrations and seeders
+      php artisan migrate:fresh --seed --force
+
+      # Start Laravel development server
+      php artisan serve --host=0.0.0.0 --port=8000
+
+  - name: Vite Dev Server
+    command: |
+      # Wait for npm install to complete
+      gp sync-await setup-complete
+
+      # Start Vite dev server
+      npm run dev -- --host=0.0.0.0
+
+# VS Code extensions to install
+vscode:
+  extensions:
+    - bmewburn.vscode-intelephense-client
+    - MehediDracula.php-namespace-resolver
+    - amiralizadeh9480.laravel-extra-intellisense
+    - ryannaddy.laravel-artisan
+    - onecentlin.laravel-blade
+    - junstyle.php-cs-fixer
+    - Vue.volar
+    - dbaeumer.vscode-eslint
+    - esbenp.prettier-vscode
+    - bradlc.vscode-tailwindcss
+
+# GitHub prebuilds
+github:
+  prebuilds:
+    master: true
+    branches: true
+    pullRequests: true
+    pullRequestsFromForks: false
+    addCheck: true
+    addComment: false
+    addBadge: false

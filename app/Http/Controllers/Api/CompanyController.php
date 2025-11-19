@@ -4,16 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CompanyRequest;
+use App\Http\Resources\CompanyResource;
 use App\Models\Company;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CompanyController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
 
@@ -47,13 +49,13 @@ class CompanyController extends Controller
 
         $companies = $query->paginate($request->get('per_page', 15));
 
-        return response()->json($companies);
+        return CompanyResource::collection($companies);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CompanyRequest $request): JsonResponse
+    public function store(CompanyRequest $request): CompanyResource
     {
         $this->authorize('create', Company::class);
 
@@ -63,23 +65,23 @@ class CompanyController extends Controller
 
         $company = Company::create($validated);
 
-        return response()->json($company->load('owner'), 201);
+        return CompanyResource::make($company->load('owner'));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Company $company): JsonResponse
+    public function show(Company $company): CompanyResource
     {
         $this->authorize('view', $company);
 
-        return response()->json($company->load(['owner', 'contacts']));
+        return CompanyResource::make($company->load(['owner', 'contacts']));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(CompanyRequest $request, Company $company): JsonResponse
+    public function update(CompanyRequest $request, Company $company): CompanyResource
     {
         $this->authorize('update', $company);
 
@@ -87,7 +89,7 @@ class CompanyController extends Controller
 
         $company->update($validated);
 
-        return response()->json($company->load('owner'));
+        return CompanyResource::make($company->load('owner'));
     }
 
     /**

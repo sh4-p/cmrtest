@@ -4,16 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ContactRequest;
+use App\Http\Resources\ContactResource;
 use App\Models\Contact;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ContactController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
 
@@ -48,13 +50,13 @@ class ContactController extends Controller
 
         $contacts = $query->paginate($request->get('per_page', 15));
 
-        return response()->json($contacts);
+        return ContactResource::collection($contacts);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ContactRequest $request): JsonResponse
+    public function store(ContactRequest $request): ContactResource
     {
         $this->authorize('create', Contact::class);
 
@@ -64,23 +66,23 @@ class ContactController extends Controller
 
         $contact = Contact::create($validated);
 
-        return response()->json($contact->load(['company', 'owner']), 201);
+        return ContactResource::make($contact->load(['company', 'owner']));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Contact $contact): JsonResponse
+    public function show(Contact $contact): ContactResource
     {
         $this->authorize('view', $contact);
 
-        return response()->json($contact->load(['company', 'owner', 'deals', 'activities']));
+        return ContactResource::make($contact->load(['company', 'owner', 'deals', 'activities']));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(ContactRequest $request, Contact $contact): JsonResponse
+    public function update(ContactRequest $request, Contact $contact): ContactResource
     {
         $this->authorize('update', $contact);
 
@@ -88,7 +90,7 @@ class ContactController extends Controller
 
         $contact->update($validated);
 
-        return response()->json($contact->load(['company', 'owner']));
+        return ContactResource::make($contact->load(['company', 'owner']));
     }
 
     /**

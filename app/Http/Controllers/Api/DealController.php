@@ -4,17 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DealRequest;
+use App\Http\Resources\DealResource;
 use App\Models\Activity;
 use App\Models\Deal;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class DealController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
 
@@ -55,13 +57,13 @@ class DealController extends Controller
 
         $deals = $query->paginate($request->get('per_page', 15));
 
-        return response()->json($deals);
+        return DealResource::collection($deals);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(DealRequest $request): JsonResponse
+    public function store(DealRequest $request): DealResource
     {
         $this->authorize('create', Deal::class);
 
@@ -72,23 +74,23 @@ class DealController extends Controller
 
         $deal = Deal::create($validated);
 
-        return response()->json($deal->load(['contact', 'stage', 'assignedTo']), 201);
+        return DealResource::make($deal->load(['contact', 'stage', 'assignedTo']));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Deal $deal): JsonResponse
+    public function show(Deal $deal): DealResource
     {
         $this->authorize('view', $deal);
 
-        return response()->json($deal->load(['contact', 'stage', 'assignedTo', 'activities']));
+        return DealResource::make($deal->load(['contact', 'stage', 'assignedTo', 'activities']));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(DealRequest $request, Deal $deal): JsonResponse
+    public function update(DealRequest $request, Deal $deal): DealResource
     {
         $this->authorize('update', $deal);
 
@@ -96,7 +98,7 @@ class DealController extends Controller
 
         $deal->update($validated);
 
-        return response()->json($deal->load(['contact', 'stage', 'assignedTo']));
+        return DealResource::make($deal->load(['contact', 'stage', 'assignedTo']));
     }
 
     /**
@@ -138,7 +140,7 @@ class DealController extends Controller
 
         return response()->json([
             'message' => 'Deal stage updated successfully',
-            'deal' => $deal->load(['contact', 'stage', 'assignedTo'])
+            'deal' => DealResource::make($deal->load(['contact', 'stage', 'assignedTo']))
         ]);
     }
 }

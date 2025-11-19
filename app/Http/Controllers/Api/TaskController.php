@@ -4,16 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TaskRequest;
+use AppHttpResourcesTaskResource;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use IlluminateHttpResourcesJsonAnonymousResourceCollection;
 
 class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
 
@@ -61,13 +63,13 @@ class TaskController extends Controller
 
         $tasks = $query->paginate($request->get('per_page', 15));
 
-        return response()->json($tasks);
+        return TaskResource::collection($tasks);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(TaskRequest $request): JsonResponse
+    public function store(TaskRequest $request): TaskResource
     {
         $this->authorize('create', Task::class);
 
@@ -79,23 +81,23 @@ class TaskController extends Controller
 
         $task = Task::create($validated);
 
-        return response()->json($task->load(['assignedTo', 'relatedTo']), 201);
+        return TaskResource::make($task->load(['assignedTo', 'relatedTo']));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Task $task): JsonResponse
+    public function show(Task $task): TaskResource
     {
         $this->authorize('view', $task);
 
-        return response()->json($task->load(['assignedTo', 'relatedTo']));
+        return TaskResource::make($task->load(['assignedTo', 'relatedTo']));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(TaskRequest $request, Task $task): JsonResponse
+    public function update(TaskRequest $request, Task $task): TaskResource
     {
         $this->authorize('update', $task);
 
@@ -103,7 +105,7 @@ class TaskController extends Controller
 
         $task->update($validated);
 
-        return response()->json($task->load(['assignedTo', 'relatedTo']));
+        return TaskResource::make($task->load(['assignedTo', 'relatedTo']));
     }
 
     /**
