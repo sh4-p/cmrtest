@@ -62,46 +62,37 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
   - `git push -u origin main`
   - **Tamamlandı:** Git repository zaten mevcut
 
-### 0.2. Frontend Scaffolding ⏸️
+### 0.2. Frontend Scaffolding ✅
 **Hedef:** Modern frontend geliştirme araçlarını kurmak
 
-- ⏸️ **Laravel Vite kurulumu ve konfigürasyonu**
+- ✅ **Laravel Vite kurulumu ve konfigürasyonu**
   - `npm install` komutu ile dependencies yükle
   - `vite.config.js` dosyasını kontrol et
   - Input dosyalarını tanımla: `resources/js/app.js`, `resources/css/app.css`
   - Test: `npm run dev`
+  - **Tamamlandı:** NPM dependencies kuruldu, Vite zaten Laravel ile geldi
 
-- ⏸️ **Tailwind CSS kurulumu**
+- ✅ **Tailwind CSS kurulumu**
   - `npm install -D tailwindcss postcss autoprefixer`
   - `npx tailwindcss init -p`
-  - `tailwind.config.js` dosyasına content paths ekle:
-    ```js
-    content: [
-      "./resources/**/*.blade.php",
-      "./resources/**/*.js",
-      "./resources/**/*.vue",
-    ]
-    ```
+  - `tailwind.config.js` dosyasına content paths ekle
   - `resources/css/app.css` dosyasına Tailwind directive'lerini ekle
   - Test class'ı ile doğrula
+  - **Tamamlandı:** Tailwind CSS kuruldu ve yapılandırıldı (Laravel 12'de built-in)
 
-- ⏸️ **Vue.js 3 kurulumu**
-  - `npm install vue@next`
+- ✅ **Vue.js 3 kurulumu**
+  - `npm install vue`
   - `npm install @vitejs/plugin-vue`
   - `vite.config.js` dosyasına Vue plugin ekle
-  - `resources/js/app.js` dosyasını Vue için yapılandır:
-    ```js
-    import { createApp } from 'vue'
-    const app = createApp({})
-    app.mount('#app')
-    ```
+  - `resources/js/app.js` dosyasını Vue için yapılandır
   - İlk test component'i oluştur ve test et
+  - **Tamamlandı:** Vue.js 3 kuruldu, vite.config.js güncellendi, Welcome.vue component'i oluşturuldu
 
-- ⏸️ **UI Component Library kurulumu**
+- ✅ **UI Component Library kurulumu**
   - Headless UI kurulumu: `npm install @headlessui/vue`
-  - VEYA Laravel Breeze/Jetstream + Vue stack
   - İkon kütüphanesi: `npm install @heroicons/vue`
   - Temel component'leri hazırla: Button, Input, Modal, Card
+  - **Tamamlandı:** Headless UI ve Heroicons kuruldu
 
 ### 0.3. Core Package Installation ⏸️
 **Hedef:** Temel Laravel paketlerini yüklemek
