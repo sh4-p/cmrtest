@@ -1,0 +1,55 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Environment
+.env
+.env.backup
+.env.production
+.env.*.php
+
+# Tests
+tests
+phpunit.xml
+.phpunit.result.cache
+
+# Build artifacts
+/public/hot
+/public/storage
+/public/build
+/storage/*.key
+
+# Logs
+*.log
+storage/logs/*
+
+# Cache
+/bootstrap/cache/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+
+# Documentation
+*.md
+docs/
+documentation/
+
+# Misc
+.DS_Store
+Thumbs.db
+*.pem
+*.key
+*.crt
