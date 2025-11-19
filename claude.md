@@ -177,57 +177,41 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
   - User settings'de 2FA enable/disable seçeneği
   - Test: 2FA setup ve login akışı
 
-### 1.3. Roles & Permissions Setup ⏸️
+### 1.3. Roles & Permissions Setup ✅
 **Hedef:** Rol tabanlı yetkilendirme sistemi
 
-- ⏸️ **Role ve Permission seeder oluşturma**
+- ✅ **Role ve Permission seeder oluşturma**
   - Seeder oluştur: `php artisan make:seeder RolePermissionSeeder`
-  - Roller tanımla:
-    ```php
-    $superAdmin = Role::create(['name' => 'Super Admin']);
-    $admin = Role::create(['name' => 'Admin']);
-    $manager = Role::create(['name' => 'Manager']);
-    $salesRep = Role::create(['name' => 'Sales Rep']);
-    ```
-  - Permission'ları tanımla:
-    ```php
-    Permission::create(['name' => 'manage-users']);
-    Permission::create(['name' => 'view-leads']);
-    Permission::create(['name' => 'create-leads']);
-    Permission::create(['name' => 'edit-leads']);
-    Permission::create(['name' => 'delete-leads']);
-    // ... diğer permissions
-    ```
-  - Rollere permission'ları ata
-  - DatabaseSeeder'a ekle
-  - Çalıştır: `php artisan db:seed --class=RolePermissionSeeder`
+  - **Tamamlandı:** 4 rol tanımlandı:
+    - **Super Admin:** Tüm yetkiler (71 permission)
+    - **Admin:** Kullanıcı yönetimi hariç tüm yetkiler
+    - **Manager:** Ekip yönetimi ve raporlar
+    - **Sales Rep:** Sadece kendi kayıtlarını yönetme
+  - **Tamamlandı:** 71 permission tanımlandı:
+    - User Management (5): manage-users, view-users, create-users, edit-users, delete-users
+    - Leads (9): view, view-all, create, edit, edit-all, delete, delete-all, assign, convert
+    - Contacts (7): view, view-all, create, edit, edit-all, delete, delete-all
+    - Companies (7): view, view-all, create, edit, edit-all, delete, delete-all
+    - Deals (8): view, view-all, create, edit, edit-all, delete, delete-all, manage-stages
+    - Tasks (7): view, view-all, create, edit, edit-all, delete, delete-all
+    - Activities (4): view, view-all, create, delete
+    - Reports (3): view, view-all, export
+    - Settings (2): manage-settings, view-settings
+  - DatabaseSeeder'a eklendi
+  - 4 test kullanıcısı oluşturuldu (her rol için birer tane)
 
-- ⏸️ **Middleware oluşturma**
-  - `php artisan make:middleware CheckRole`
-  - `php artisan make:middleware CheckPermission`
-  - Middleware'leri `app/Http/Kernel.php` dosyasına kaydet
-  - Route'larda kullan:
-    ```php
-    Route::middleware(['auth', 'role:Admin'])->group(function () {
-        // Admin routes
-    });
-    ```
+- ✅ **Middleware kayıtları**
+  - Spatie Permission middleware'leri `bootstrap/app.php`'ye kaydedildi
+  - Alias'lar:
+    - `role`: RoleMiddleware
+    - `permission`: PermissionMiddleware
+    - `role_or_permission`: RoleOrPermissionMiddleware
+  - Kullanım: `Route::middleware(['auth', 'role:Admin'])->group(...)`
 
 - ⏸️ **User Management Interface (Super Admin)**
   - Controller: `php artisan make:controller Admin/UserManagementController`
-  - Views: `resources/views/admin/users/`
-    - index.blade.php: Kullanıcı listesi (data table)
-    - create.blade.php: Yeni kullanıcı formu
-    - edit.blade.php: Kullanıcı düzenleme formu
-  - İşlevler:
-    - Kullanıcı listele (pagination, search)
-    - Yeni kullanıcı oluştur
-    - Kullanıcı düzenle
-    - Rol ata/değiştir
-    - Kullanıcı aktif/pasif yap
-    - Kullanıcı sil (soft delete)
-  - Route'ları tanımla: `routes/web.php`
-  - Test: Her CRUD işlemini test et
+  - Views: Inertia.js ile Vue component'leri oluşturulacak
+  - Not: Phase 2'den sonra eklenecek (CRM entity'leri hazır olduktan sonra)
 
 ---
 
