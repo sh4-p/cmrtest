@@ -122,30 +122,30 @@ Modern, mobile-first CRM sistemi - PHP MVC mimarisi üzerine inşa edilmiş
 
 ---
 
-## Phase 1: Authentication & Authorization (MVC Foundation) ⏸️
+## Phase 1: Authentication & Authorization (MVC Foundation) 🔄
 
-### 1.1. User Model & Migration ⏸️
+### 1.1. User Model & Migration ✅
 **Hedef:** User modelini CRM ihtiyaçlarına göre genişletmek
 
-- ⏸️ **User migration'ı güncelleme**
+- ✅ **User migration'ı güncelleme**
   - Migration dosyasını aç: `database/migrations/*_create_users_table.php`
-  - Yeni alanlar ekle:
+  - Yeni alanlar eklendi:
     ```php
     $table->string('phone_number')->nullable();
-    $table->foreignId('avatar_id')->nullable();
     $table->boolean('is_active')->default(true);
     $table->timestamp('last_login_at')->nullable();
     $table->string('timezone')->default('UTC');
     ```
-  - Migration çalıştır: `php artisan migrate:fresh`
+  - **Tamamlandı:** User table CRM alanları ile genişletildi
+  - Not: Avatar Spatie MediaLibrary ile polymorphic olarak yönetilecek
 
-- ⏸️ **User Model konfigürasyonu**
-  - `app/Models/User.php` dosyasını aç
-  - `HasRoles` trait ekle: `use HasRoles;`
-  - Fillable alanları güncelle
-  - Cast'leri tanımla: `'is_active' => 'boolean'`
-  - Accessor/Mutator'lar ekle (gerekirse)
-  - İlişkileri tanımla (companies, contacts, deals için)
+- ✅ **User Model konfigürasyonu**
+  - `app/Models/User.php` güncellendi
+  - `HasRoles` trait eklendi (Spatie Permission)
+  - Fillable alanları güncellendi (phone_number, is_active, last_login_at, timezone)
+  - Cast'ler tanımlandı: `'is_active' => 'boolean'`, `'last_login_at' => 'datetime'`
+  - **Tamamlandı:** User model CRM için hazır
+  - Not: Relationships Phase 2'de eklenecek (companies, contacts, deals)
 
 ### 1.2. Authentication (Controllers & Views) ⏸️
 **Hedef:** Özelleştirilmiş authentication sistemi
