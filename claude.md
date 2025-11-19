@@ -891,7 +891,68 @@ All 8 API Resource classes fully implemented with:
 
 ---
 
-### 4.4. AJAX Integration (Frontend ↔ Backend) ⏸️
+### 4.4. Policies (Authorization) ✅
+**Hedef:** Authorization mantığını merkezileştirmek
+
+- ✅ **LeadPolicy**
+  - File: `app/Policies/LeadPolicy.php` ✅
+  - Methods implemented:
+    - viewAny(): 'view-leads' OR 'view-all-leads' permission ✅
+    - view(): 'view-all-leads' OR (owns lead AND 'view-leads') ✅
+    - create(): 'create-leads' permission ✅
+    - update(): 'edit-all-leads' OR (owns lead AND 'edit-leads') ✅
+    - delete(): 'delete-all-leads' OR (owns lead AND 'delete-leads') ✅
+    - assign(): 'assign-leads' permission ✅
+    - convert(): 'convert-leads' AND (editable by user) ✅
+  - Ownership check: assigned_to_id ✅
+
+- ✅ **ContactPolicy**
+  - File: `app/Policies/ContactPolicy.php` ✅
+  - Permission-based authorization ✅
+  - Ownership check: owner_id ✅
+  - Methods: viewAny, view, create, update, delete, restore, forceDelete ✅
+
+- ✅ **CompanyPolicy**
+  - File: `app/Policies/CompanyPolicy.php` ✅
+  - Permission-based authorization ✅
+  - Ownership check: owner_id ✅
+  - Methods: viewAny, view, create, update, delete, restore, forceDelete ✅
+
+- ✅ **DealPolicy**
+  - File: `app/Policies/DealPolicy.php` ✅
+  - Permission-based authorization ✅
+  - Ownership check: assigned_to_id ✅
+  - Additional method: manageStages() for 'manage-stages-deals' ✅
+  - Methods: viewAny, view, create, update, delete, restore, forceDelete ✅
+
+- ✅ **TaskPolicy**
+  - File: `app/Policies/TaskPolicy.php` ✅
+  - Permission-based authorization ✅
+  - Ownership check: assigned_to_id ✅
+  - Methods: viewAny, view, create, update, delete, restore, forceDelete ✅
+
+- ✅ **ActivityPolicy**
+  - File: `app/Policies/ActivityPolicy.php` ✅
+  - Permission-based authorization ✅
+  - Ownership check: user_id (creator) ✅
+  - Special rules: Only creator can update, creator or admin can delete ✅
+  - Methods: viewAny, view, create, update, delete, restore, forceDelete ✅
+
+---
+
+**Phase 4.4 Summary:**
+All 6 Policy classes fully implemented with:
+- ✅ Permission-based authorization using Spatie Permission
+- ✅ Ownership validation (assigned_to_id, owner_id, user_id)
+- ✅ Support for both individual and all-access permissions
+- ✅ Custom methods for specific actions (assign, convert, manageStages)
+- ✅ Auto-discovery enabled (Laravel 11+ feature)
+- ✅ Consistent authorization logic across all controllers
+- ✅ Granular access control for multi-tenant CRM
+
+---
+
+### 4.5. AJAX Integration (Frontend ↔ Backend) ⏸️
 **Hedef:** Vue component'lerini API'ye bağlamak
 
 - ⏸️ **Axios configuration**
