@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # PHP-FPM Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: advanced-crm-app
+    container_name: crm-app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - crm-network
+
+  # Nginx Service
+  nginx:
+    image: nginx:alpine
+    container_name: crm-nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8080:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - crm-network
+
+  # MySQL Service
+  mysql:
+    image: mysql:8.0
+    container_name: crm-mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: advanced_crm
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_PASSWORD: crm_password
+      MYSQL_USER: crm_user
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - crm-network
+
+  # Redis Service
+  redis:
+    image: redis:alpine
+    container_name: crm-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - crm-network
+
+  # Node Service (for frontend build)
+  node:
+    image: node:20-alpine
+    container_name: crm-node
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "5173:5173"
+    networks:
+      - crm-network
+
+# Docker Networks
+networks:
+  crm-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local
