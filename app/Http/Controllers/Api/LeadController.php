@@ -4,16 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LeadRequest;
+use App\Http\Resources\ContactResource;
+use App\Http\Resources\LeadResource;
 use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class LeadController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
 
@@ -53,13 +56,13 @@ class LeadController extends Controller
 
         $leads = $query->paginate($request->get('per_page', 15));
 
-        return response()->json($leads);
+        return LeadResource::collection($leads);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(LeadRequest $request): JsonResponse
+    public function store(LeadRequest $request): LeadResource
     {
         $this->authorize('create', Lead::class);
 
@@ -70,23 +73,23 @@ class LeadController extends Controller
 
         $lead = Lead::create($validated);
 
-        return response()->json($lead->load('assignedTo'), 201);
+        return LeadResource::make($lead->load('assignedTo'));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Lead $lead): JsonResponse
+    public function show(Lead $lead): LeadResource
     {
         $this->authorize('view', $lead);
 
-        return response()->json($lead->load(['assignedTo', 'convertedToContact', 'activities']));
+        return LeadResource::make($lead->load(['assignedTo', 'convertedToContact', 'activities']));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(LeadRequest $request, Lead $lead): JsonResponse
+    public function update(LeadRequest $request, Lead $lead): LeadResource
     {
         $this->authorize('update', $lead);
 
@@ -94,7 +97,7 @@ class LeadController extends Controller
 
         $lead->update($validated);
 
-        return response()->json($lead->load('assignedTo'));
+        return LeadResource::make($lead->load('assignedTo'));
     }
 
     /**
@@ -130,8 +133,8 @@ class LeadController extends Controller
 
         return response()->json([
             'message' => 'Lead converted successfully',
-            'contact' => $contact->load(['company', 'owner']),
-            'lead' => $lead->fresh()->load('convertedToContact')
+            'contact' => ContactResource::make($contact->load(['company', 'owner'])),
+            'lead' => LeadResource::make($lead->fresh()->load('convertedToContact'))
         ], 200);
     }
 }
