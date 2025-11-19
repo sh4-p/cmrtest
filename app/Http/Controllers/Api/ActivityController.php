@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ActivityRequest;
 use App\Models\Activity;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -58,15 +59,9 @@ class ActivityController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(ActivityRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'description' => 'required|string',
-            'type' => 'required|string|in:Call,Meeting,Email,Note',
-            'subject_type' => 'required|string',
-            'subject_id' => 'required|integer',
-            'activity_date' => 'nullable|date',
-        ]);
+        $validated = $request->validated();
 
         $validated['user_id'] = $request->user()->id;
         $validated['activity_date'] = $validated['activity_date'] ?? now();
@@ -87,13 +82,9 @@ class ActivityController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Activity $activity): JsonResponse
+    public function update(ActivityRequest $request, Activity $activity): JsonResponse
     {
-        $validated = $request->validate([
-            'description' => 'sometimes|required|string',
-            'type' => 'sometimes|required|string|in:Call,Meeting,Email,Note',
-            'activity_date' => 'sometimes|nullable|date',
-        ]);
+        $validated = $request->validated();
 
         $activity->update($validated);
 

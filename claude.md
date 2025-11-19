@@ -720,43 +720,101 @@ All 7 API controllers fully implemented with:
 
 ---
 
-### 4.2. Form Requests (Validation) ⏸️
+### 4.2. Form Requests (Validation) ✅
 **Hedef:** Backend validation'ı tanımlamak
 
-- ⏸️ **LeadRequest**
-  - Komut: `php artisan make:request LeadRequest`
-  - Rules:
-    ```php
-    public function rules() {
-        return [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:leads,email,' . $this->lead?->id,
-            'phone_number' => 'nullable|string|max:20',
-            'source' => 'required|in:Website,Referral,Cold Call,Social Media',
-            'status' => 'required|in:New,Contacted,Qualified,Unqualified',
-            'assigned_to_id' => 'nullable|exists:users,id',
-            'notes' => 'nullable|string',
-        ];
-    }
-    ```
-  - Custom messages (Türkçe)
+- ✅ **LeadRequest**
+  - File: `app/Http/Requests/LeadRequest.php` ✅
+  - Rules implemented:
+    - first_name, last_name (required, string, max:255)
+    - email (required, email, unique with update support, max:255)
+    - phone_number (nullable, string, max:20)
+    - source (required, in:Website,Referral,Cold Call,Social Media)
+    - status (nullable, in:New,Contacted,Qualified,Unqualified,Converted)
+    - assigned_to_id (nullable, exists:users)
+    - notes (nullable, string)
+  - Custom error messages ✅
+  - Used in LeadController (store, update) ✅
 
-- ⏸️ **ContactRequest**
-  - Komut: `php artisan make:request ContactRequest`
-  - Rules: Similar to Lead + company_id validation
+- ✅ **ContactRequest**
+  - File: `app/Http/Requests/ContactRequest.php` ✅
+  - Rules implemented:
+    - first_name, last_name (required, string, max:255)
+    - email (required, email, unique with update support, max:255)
+    - phone_number (nullable, string, max:20)
+    - company_id (nullable, exists:companies)
+    - owner_id (nullable, exists:users)
+    - notes (nullable, string)
+  - Custom error messages ✅
+  - Used in ContactController (store, update) ✅
 
-- ⏸️ **CompanyRequest**
-  - Komut: `php artisan make:request CompanyRequest`
-  - Rules: name, industry, website (url), phone_number, address
+- ✅ **CompanyRequest**
+  - File: `app/Http/Requests/CompanyRequest.php` ✅
+  - Rules implemented:
+    - name (required, string, max:255)
+    - industry (nullable, string, max:255)
+    - website (nullable, url, max:255)
+    - phone_number (nullable, string, max:20)
+    - address (nullable, string)
+    - owner_id (nullable, exists:users)
+    - notes (nullable, string)
+  - Custom error messages ✅
+  - Used in CompanyController (store, update) ✅
 
-- ⏸️ **DealRequest**
-  - Komut: `php artisan make:request DealRequest`
-  - Rules: name, contact_id, deal_stage_id, amount (numeric), closing_date (date), probability (0-100)
+- ✅ **DealRequest**
+  - File: `app/Http/Requests/DealRequest.php` ✅
+  - Rules implemented:
+    - name (required, string, max:255)
+    - contact_id (required, exists:contacts)
+    - deal_stage_id (required, exists:deal_stages)
+    - amount (required, numeric, min:0)
+    - closing_date (nullable, date)
+    - probability (nullable, integer, min:0, max:100)
+    - assigned_to_id (nullable, exists:users)
+    - description (nullable, string)
+  - Custom error messages ✅
+  - Used in DealController (store, update) ✅
 
-- ⏸️ **TaskRequest**
-  - Komut: `php artisan make:request TaskRequest`
-  - Rules: title, description, due_date, status, priority, assigned_to_id, related_to_type, related_to_id
+- ✅ **TaskRequest**
+  - File: `app/Http/Requests/TaskRequest.php` ✅
+  - Rules implemented:
+    - title (required, string, max:255)
+    - description (nullable, string)
+    - due_date (nullable, date)
+    - status (nullable, in:Pending,In Progress,Completed)
+    - priority (nullable, in:Low,Medium,High,Urgent)
+    - assigned_to_id (nullable, exists:users)
+    - related_to_type (required, string)
+    - related_to_id (required, integer)
+  - Custom error messages ✅
+  - Used in TaskController (store, update) ✅
+
+- ✅ **ActivityRequest**
+  - File: `app/Http/Requests/ActivityRequest.php` ✅
+  - Rules implemented:
+    - description (required, string)
+    - type (required, in:Call,Meeting,Email,Note)
+    - subject_type (required, string)
+    - subject_id (required, integer)
+    - activity_date (nullable, date)
+  - Custom error messages ✅
+  - Used in ActivityController (store, update) ✅
+
+---
+
+**Phase 4.2 Summary:**
+All 6 Form Request classes fully implemented with:
+- ✅ Comprehensive validation rules for all fields
+- ✅ Unique validation with update support (for email fields)
+- ✅ Foreign key existence validation (exists rule)
+- ✅ Enum validation (in rule for status, type, priority fields)
+- ✅ Custom validation error messages
+- ✅ Authorization delegated to controllers (authorize returns true)
+- ✅ All controllers updated to use Form Requests instead of inline validation
+- ✅ Cleaner, more maintainable controller code
+- ✅ Centralized validation logic for reusability
+
+---
 
 ### 4.3. API Resources (Response Formatting) ⏸️
 **Hedef:** API response'larını formatlamak

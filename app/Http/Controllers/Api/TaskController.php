@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TaskRequest;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -66,20 +67,11 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(TaskRequest $request): JsonResponse
     {
         $this->authorize('create', Task::class);
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'due_date' => 'nullable|date',
-            'status' => 'nullable|string|in:Pending,In Progress,Completed',
-            'priority' => 'nullable|string|in:Low,Medium,High,Urgent',
-            'assigned_to_id' => 'nullable|exists:users,id',
-            'related_to_type' => 'required|string',
-            'related_to_id' => 'required|integer',
-        ]);
+        $validated = $request->validated();
 
         $validated['status'] = $validated['status'] ?? 'Pending';
         $validated['priority'] = $validated['priority'] ?? 'Medium';
@@ -103,18 +95,11 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Task $task): JsonResponse
+    public function update(TaskRequest $request, Task $task): JsonResponse
     {
         $this->authorize('update', $task);
 
-        $validated = $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string',
-            'due_date' => 'nullable|date',
-            'status' => 'sometimes|required|string|in:Pending,In Progress,Completed',
-            'priority' => 'sometimes|required|string|in:Low,Medium,High,Urgent',
-            'assigned_to_id' => 'nullable|exists:users,id',
-        ]);
+        $validated = $request->validated();
 
         $task->update($validated);
 

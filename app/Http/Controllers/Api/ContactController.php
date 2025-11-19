@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ContactRequest;
 use App\Models\Contact;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -53,19 +54,11 @@ class ContactController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(ContactRequest $request): JsonResponse
     {
         $this->authorize('create', Contact::class);
 
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:contacts,email|max:255',
-            'phone_number' => 'nullable|string|max:255',
-            'company_id' => 'nullable|exists:companies,id',
-            'owner_id' => 'nullable|exists:users,id',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $validated['owner_id'] = $validated['owner_id'] ?? $request->user()->id;
 
@@ -87,19 +80,11 @@ class ContactController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Contact $contact): JsonResponse
+    public function update(ContactRequest $request, Contact $contact): JsonResponse
     {
         $this->authorize('update', $contact);
 
-        $validated = $request->validate([
-            'first_name' => 'sometimes|required|string|max:255',
-            'last_name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|max:255|unique:contacts,email,' . $contact->id,
-            'phone_number' => 'nullable|string|max:255',
-            'company_id' => 'nullable|exists:companies,id',
-            'owner_id' => 'nullable|exists:users,id',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $contact->update($validated);
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -52,19 +53,11 @@ class CompanyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(CompanyRequest $request): JsonResponse
     {
         $this->authorize('create', Company::class);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'industry' => 'nullable|string|max:255',
-            'website' => 'nullable|url|max:255',
-            'phone_number' => 'nullable|string|max:255',
-            'address' => 'nullable|string',
-            'owner_id' => 'nullable|exists:users,id',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $validated['owner_id'] = $validated['owner_id'] ?? $request->user()->id;
 
@@ -86,19 +79,11 @@ class CompanyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Company $company): JsonResponse
+    public function update(CompanyRequest $request, Company $company): JsonResponse
     {
         $this->authorize('update', $company);
 
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'industry' => 'nullable|string|max:255',
-            'website' => 'nullable|url|max:255',
-            'phone_number' => 'nullable|string|max:255',
-            'address' => 'nullable|string',
-            'owner_id' => 'nullable|exists:users,id',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $company->update($validated);
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DealRequest;
 use App\Models\Activity;
 use App\Models\Deal;
 use Illuminate\Http\JsonResponse;
@@ -60,20 +61,11 @@ class DealController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(DealRequest $request): JsonResponse
     {
         $this->authorize('create', Deal::class);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'contact_id' => 'required|exists:contacts,id',
-            'deal_stage_id' => 'required|exists:deal_stages,id',
-            'amount' => 'required|numeric|min:0',
-            'closing_date' => 'nullable|date',
-            'probability' => 'nullable|integer|min:0|max:100',
-            'assigned_to_id' => 'nullable|exists:users,id',
-            'description' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $validated['assigned_to_id'] = $validated['assigned_to_id'] ?? $request->user()->id;
         $validated['probability'] = $validated['probability'] ?? 50;
@@ -96,20 +88,11 @@ class DealController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Deal $deal): JsonResponse
+    public function update(DealRequest $request, Deal $deal): JsonResponse
     {
         $this->authorize('update', $deal);
 
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'contact_id' => 'sometimes|required|exists:contacts,id',
-            'deal_stage_id' => 'sometimes|required|exists:deal_stages,id',
-            'amount' => 'sometimes|required|numeric|min:0',
-            'closing_date' => 'nullable|date',
-            'probability' => 'nullable|integer|min:0|max:100',
-            'assigned_to_id' => 'nullable|exists:users,id',
-            'description' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $deal->update($validated);
 

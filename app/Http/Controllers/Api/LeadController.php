@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LeadRequest;
 use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -58,20 +59,11 @@ class LeadController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(LeadRequest $request): JsonResponse
     {
         $this->authorize('create', Lead::class);
 
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone_number' => 'nullable|string|max:255',
-            'source' => 'required|string|in:Website,Referral,Cold Call,Social Media,Email Campaign',
-            'status' => 'nullable|string|in:New,Contacted,Qualified,Unqualified',
-            'assigned_to_id' => 'nullable|exists:users,id',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $validated['status'] = $validated['status'] ?? 'New';
         $validated['assigned_to_id'] = $validated['assigned_to_id'] ?? $request->user()->id;
@@ -94,20 +86,11 @@ class LeadController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Lead $lead): JsonResponse
+    public function update(LeadRequest $request, Lead $lead): JsonResponse
     {
         $this->authorize('update', $lead);
 
-        $validated = $request->validate([
-            'first_name' => 'sometimes|required|string|max:255',
-            'last_name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|max:255',
-            'phone_number' => 'nullable|string|max:255',
-            'source' => 'sometimes|required|string|in:Website,Referral,Cold Call,Social Media,Email Campaign',
-            'status' => 'sometimes|required|string|in:New,Contacted,Qualified,Unqualified,Converted',
-            'assigned_to_id' => 'nullable|exists:users,id',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $lead->update($validated);
 
