@@ -1,59 +1,370 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CRM System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern, full-featured Customer Relationship Management system built with Laravel 12, Inertia.js, Vue 3, and Tailwind CSS.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Core CRM Functionality
+- **Lead Management** - Track and manage sales leads through the pipeline
+- **Contact Management** - Maintain detailed contact information
+- **Company Management** - Organize contacts by company
+- **Deal Management** - Track deals through customizable stages
+- **Task Management** - Assign and track tasks with priorities and due dates
+- **Activity Tracking** - Log calls, emails, meetings, and other interactions
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### User Management & Permissions
+- **Role-Based Access Control** - Admin, Manager, and Sales Rep roles
+- **Granular Permissions** - Fine-grained control over CRUD operations
+- **User Assignment** - Assign leads, deals, and tasks to specific users
+- **Ownership Filtering** - Users see only their own data or all data based on permissions
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### User Interface
+- **Real-Time Dashboard** - KPI cards with trend indicators
+- **Global Search** - Search across all entities from anywhere
+- **Responsive Design** - Mobile-friendly Tailwind CSS interface
+- **SPA Experience** - Seamless navigation with Inertia.js
+- **Interactive Tables** - Sortable, filterable data tables
 
-## Learning Laravel
+### Technical Features
+- **RESTful API** - Complete API with Sanctum authentication
+- **Form Validation** - Server-side and client-side validation
+- **Policy-Based Authorization** - Laravel policies for all entities
+- **Database Agnostic** - Works with SQLite, MySQL, PostgreSQL
+- **Demo Data** - Comprehensive seeder for testing
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Requirements
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP 8.4+
+- Composer
+- Node.js 18+ and npm
+- SQLite, MySQL 8+, or PostgreSQL 14+
 
-## Laravel Sponsors
+## Installation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 1. Clone the Repository
 
-### Premium Partners
+```bash
+git clone <repository-url>
+cd cmrtest
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 2. Install Dependencies
 
-## Contributing
+```bash
+# Install PHP dependencies
+composer install
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Install JavaScript dependencies
+npm install
+```
 
-## Code of Conduct
+### 3. Environment Configuration
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+# Copy the environment file
+cp .env.example .env
 
-## Security Vulnerabilities
+# Generate application key
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 4. Configure Database
+
+Edit `.env` and set your database connection:
+
+**For Development (SQLite):**
+```env
+DB_CONNECTION=sqlite
+```
+
+**For Production (MySQL):**
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=crm_database
+DB_USERNAME=crm_user
+DB_PASSWORD=secure_password
+```
+
+### 5. Run Migrations
+
+```bash
+# Create database tables
+php artisan migrate
+
+# Seed with demo data (optional)
+php artisan db:seed --class=DemoDataSeeder
+```
+
+### 6. Build Assets
+
+```bash
+# Development
+npm run dev
+
+# Production
+npm run build
+```
+
+### 7. Start the Server
+
+```bash
+php artisan serve
+```
+
+Visit `http://localhost:8000` in your browser.
+
+## Demo Users
+
+After running the DemoDataSeeder, you can log in with:
+
+| Email | Password | Role |
+|-------|----------|------|
+| admin@crm.test | password | Admin |
+| manager@crm.test | password | Manager |
+| sales@crm.test | password | Sales Rep |
+
+## Permissions
+
+### Admin Role
+- Full access to all features
+- Can delete any record
+- Can manage all entities
+
+### Manager Role
+- View and edit all records
+- Cannot delete records owned by others
+- Can assign leads and manage stages
+
+### Sales Rep Role
+- View and edit own records only
+- Cannot view other users' data
+- Can create new records
+
+## API Documentation
+
+### Authentication
+
+All API endpoints require Sanctum authentication:
+
+```bash
+# Login to get token
+POST /api/login
+{
+  "email": "user@example.com",
+  "password": "password"
+}
+```
+
+### Available Endpoints
+
+```
+GET    /api/leads              # List leads
+POST   /api/leads              # Create lead
+GET    /api/leads/{id}         # Show lead
+PUT    /api/leads/{id}         # Update lead
+DELETE /api/leads/{id}         # Delete lead
+POST   /api/leads/{id}/convert # Convert lead to contact
+
+GET    /api/contacts           # List contacts
+GET    /api/companies          # List companies
+GET    /api/deals              # List deals
+GET    /api/tasks              # List tasks
+GET    /api/activities         # List activities
+
+GET    /api/dashboard/stats    # Dashboard statistics
+GET    /api/search?q={query}   # Global search
+```
+
+## Production Deployment
+
+### 1. Environment Setup
+
+Update `.env` for production:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+
+# Use MySQL or PostgreSQL
+DB_CONNECTION=mysql
+DB_HOST=your-db-host
+DB_DATABASE=your-database
+DB_USERNAME=your-username
+DB_PASSWORD=your-secure-password
+
+# Configure mail
+MAIL_MAILER=smtp
+MAIL_HOST=your-smtp-host
+MAIL_PORT=587
+MAIL_USERNAME=your-smtp-username
+MAIL_PASSWORD=your-smtp-password
+MAIL_FROM_ADDRESS=noreply@your-domain.com
+```
+
+### 2. Optimize for Production
+
+```bash
+# Cache configuration
+php artisan config:cache
+
+# Cache routes
+php artisan route:cache
+
+# Cache views
+php artisan view:cache
+
+# Build assets for production
+npm run build
+```
+
+### 3. Set Permissions
+
+```bash
+# Storage and cache directories
+chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
+```
+
+### 4. Run Migrations
+
+```bash
+php artisan migrate --force
+php artisan db:seed --class=DemoDataSeeder
+```
+
+### 5. Configure Web Server
+
+**Nginx Example:**
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
+    root /var/www/cmrtest/public;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.php;
+
+    charset utf-8;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    error_page 404 /index.php;
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.4-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+```
+
+## Technology Stack
+
+- **Backend:** Laravel 12.39.0 (PHP 8.4)
+- **Frontend:** Vue.js 3 (Composition API)
+- **SPA Framework:** Inertia.js 2.0
+- **Styling:** Tailwind CSS
+- **Authentication:** Laravel Sanctum
+- **Permissions:** Spatie Laravel Permission
+- **Icons:** Heroicons
+- **Database:** SQLite / MySQL / PostgreSQL
+
+## Project Structure
+
+```
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Api/          # API controllers
+│   │   │   └── Web/          # Inertia controllers
+│   │   └── Resources/        # API resources
+│   ├── Models/               # Eloquent models
+│   └── Policies/             # Authorization policies
+├── database/
+│   ├── migrations/           # Database migrations
+│   └── seeders/              # Database seeders
+├── resources/
+│   ├── js/
+│   │   ├── Components/       # Vue components
+│   │   ├── Composables/      # Vue composables
+│   │   ├── Layouts/          # Page layouts
+│   │   └── Pages/            # Inertia pages
+│   └── views/                # Blade views
+└── routes/
+    ├── api.php               # API routes
+    └── web.php               # Web routes
+```
+
+## Development
+
+### Running Tests
+
+```bash
+php artisan test
+```
+
+### Code Style
+
+```bash
+# PHP (Laravel Pint)
+./vendor/bin/pint
+
+# JavaScript (ESLint)
+npm run lint
+```
+
+### Watch Assets
+
+```bash
+npm run dev
+```
+
+## Troubleshooting
+
+### Database Issues
+
+```bash
+# Reset database
+php artisan migrate:fresh --seed
+```
+
+### Clear Cache
+
+```bash
+# Clear all caches
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+```
+
+### Permission Denied
+
+```bash
+# Fix storage permissions
+chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the MIT license.
+
+## Support
+
+For issues and questions, please open an issue on the GitHub repository.
