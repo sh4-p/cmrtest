@@ -40,6 +40,42 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    :href="route('leads.index')"
+                                    :active="route().current('leads.*')"
+                                >
+                                    Leads
+                                </NavLink>
+                                <NavLink
+                                    :href="route('contacts.index')"
+                                    :active="route().current('contacts.*')"
+                                >
+                                    Contacts
+                                </NavLink>
+                                <NavLink
+                                    :href="route('companies.index')"
+                                    :active="route().current('companies.*')"
+                                >
+                                    Companies
+                                </NavLink>
+                                <NavLink
+                                    :href="route('deals.index')"
+                                    :active="route().current('deals.*')"
+                                >
+                                    Deals
+                                </NavLink>
+                                <NavLink
+                                    :href="route('tasks.index')"
+                                    :active="route().current('tasks.*')"
+                                >
+                                    Tasks
+                                </NavLink>
+                                <NavLink
+                                    :href="route('activities.index')"
+                                    :active="route().current('activities.*')"
+                                >
+                                    Activities
+                                </NavLink>
                             </div>
                         </div>
 
@@ -151,6 +187,42 @@ const showingNavigationDropdown = ref(false);
                             :active="route().current('dashboard')"
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('leads.index')"
+                            :active="route().current('leads.*')"
+                        >
+                            Leads
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('contacts.index')"
+                            :active="route().current('contacts.*')"
+                        >
+                            Contacts
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('companies.index')"
+                            :active="route().current('companies.*')"
+                        >
+                            Companies
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('deals.index')"
+                            :active="route().current('deals.*')"
+                        >
+                            Deals
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('tasks.index')"
+                            :active="route().current('tasks.*')"
+                        >
+                            Tasks
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('activities.index')"
+                            :active="route().current('activities.*')"
+                        >
+                            Activities
                         </ResponsiveNavLink>
                     </div>
 
