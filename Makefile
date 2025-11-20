@@ -101,8 +101,24 @@ shell:
 db-shell:
 	docker-compose exec mysql mysql -u crm_user -pcrm_password advanced_crm
 
+# Wait for MySQL to be healthy
+wait-for-mysql:
+	@echo "⏳ Waiting for MySQL to be ready..."
+	@timeout=60; \
+	counter=0; \
+	until docker-compose exec -T mysql mysqladmin ping -h localhost -u root -p$${DB_ROOT_PASSWORD:-root_password} --silent 2>/dev/null; do \
+		counter=$$((counter + 1)); \
+		if [ $$counter -gt $$timeout ]; then \
+			echo "❌ MySQL failed to start within $$timeout seconds"; \
+			exit 1; \
+		fi; \
+		echo "⏳ Waiting for MySQL... ($$counter/$$timeout)"; \
+		sleep 1; \
+	done
+	@echo "✅ MySQL is ready!"
+
 # Initial installation
-install: up
+install: up wait-for-mysql
 	@echo "📦 Installing dependencies..."
 	docker-compose exec app composer install
 	docker-compose exec app npm install
@@ -117,19 +133,19 @@ install: up
 	@echo "👤 Login: admin@crm.test / password"
 
 # Run migrations
-migrate:
+migrate: wait-for-mysql
 	@echo "🗃️  Running migrations..."
 	docker-compose exec app php artisan migrate
 	@echo "✅ Migrations completed!"
 
 # Run seeders
-seed:
+seed: wait-for-mysql
 	@echo "🌱 Running seeders..."
 	docker-compose exec app php artisan db:seed
 	@echo "✅ Seeding completed!"
 
 # Fresh migration with seeding
-fresh:
+fresh: wait-for-mysql
 	@echo "🗃️  Fresh migration with seeding..."
 	docker-compose exec app php artisan migrate:fresh --seed
 	@echo "✅ Database refreshed!"
