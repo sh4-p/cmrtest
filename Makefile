@@ -290,7 +290,7 @@ setup:
 	fi
 	@echo ""
 	@echo "📋 Step 2/6: Installing Composer dependencies..."
-	/usr/local/bin/composer install --no-interaction --prefer-dist --optimize-autoloader
+	/usr/bin/php /usr/local/bin/composer install --no-interaction --prefer-dist --optimize-autoloader
 	@echo ""
 	@echo "📋 Step 3/6: Installing NPM dependencies..."
 	npm install
