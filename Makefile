@@ -1,4 +1,7 @@
-.PHONY: help build up down restart logs shell test migrate seed fresh install clean dev prod
+.PHONY: help build up down restart logs shell test migrate seed fresh install clean dev prod setup serve stop
+
+# Detect if running in Codespace
+IS_CODESPACE := $(shell if [ -n "$$CODESPACES" ]; then echo "true"; else echo "false"; fi)
 
 # Default target
 help:
@@ -6,7 +9,12 @@ help:
 	@echo "  Advanced CRM - Docker Management Commands"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@echo ""
-	@echo "  Development Commands:"
+	@echo "  GitHub Codespace Commands:"
+	@echo "    make setup        - One-time setup (deps + db + key)"
+	@echo "    make serve        - Start Laravel + Vite servers"
+	@echo "    make stop         - Stop all running servers"
+	@echo ""
+	@echo "  Docker Development Commands:"
 	@echo "    make dev          - Start development environment with HMR"
 	@echo "    make install      - Initial setup (deps + migrate + seed)"
 	@echo "    make up           - Start all containers"
@@ -264,3 +272,75 @@ urls:
 start: dev install urls
 	@echo ""
 	@echo "🎉 System is ready to use!"
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# GitHub Codespace Targets
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# One-time setup for Codespace
+setup:
+	@echo "🚀 Setting up CRM for GitHub Codespace..."
+	@echo ""
+	@echo "📋 Step 1/6: Checking environment..."
+	@if [ ! -f .env ]; then \
+		echo "📝 Creating .env file..."; \
+		cp .env.example .env; \
+	else \
+		echo "✅ .env file exists"; \
+	fi
+	@echo ""
+	@echo "📋 Step 2/6: Installing Composer dependencies..."
+	/usr/local/bin/composer install --no-interaction --prefer-dist --optimize-autoloader
+	@echo ""
+	@echo "📋 Step 3/6: Installing NPM dependencies..."
+	npm install
+	@echo ""
+	@echo "📋 Step 4/6: Generating application key..."
+	/usr/bin/php artisan key:generate --force
+	@echo ""
+	@echo "📋 Step 5/6: Setting up SQLite database..."
+	@touch database/database.sqlite
+	/usr/bin/php artisan migrate:fresh --seed --force
+	@echo ""
+	@echo "📋 Step 6/6: Creating storage link..."
+	/usr/bin/php artisan storage:link
+	@echo ""
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@echo "✅ Setup completed!"
+	@echo ""
+	@echo "👤 Test Users:"
+	@echo "   • admin@advancedcrm.com (Super Admin)"
+	@echo "   • admin@example.com     (Admin)"
+	@echo "   • manager@example.com   (Manager)"
+	@echo "   • sales@example.com     (Sales Rep)"
+	@echo "   Password: password"
+	@echo ""
+	@echo "🎯 Next step: Run 'make serve' to start the servers"
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Start Laravel and Vite servers for Codespace
+serve:
+	@echo "🚀 Starting CRM application in Codespace..."
+	@echo ""
+	@if lsof -Pi :8000 -sTCP:LISTEN -t >/dev/null 2>&1 ; then \
+		echo "⚠️  Port 8000 is in use. Stopping..."; \
+		lsof -ti:8000 | xargs kill -9 2>/dev/null || true; \
+		sleep 1; \
+	fi
+	@if lsof -Pi :5173 -sTCP:LISTEN -t >/dev/null 2>&1 ; then \
+		echo "⚠️  Port 5173 is in use. Stopping..."; \
+		lsof -ti:5173 | xargs kill -9 2>/dev/null || true; \
+		sleep 1; \
+	fi
+	@echo "📱 Starting Laravel server on http://0.0.0.0:8000"
+	@/usr/bin/php artisan serve --host=0.0.0.0 --port=8000 & \
+	echo "⚡ Starting Vite dev server on http://0.0.0.0:5173"; \
+	npm run dev
+
+# Stop all Codespace servers
+stop:
+	@echo "🛑 Stopping servers..."
+	@pkill -f "php artisan serve" 2>/dev/null || true
+	@pkill -f "vite" 2>/dev/null || true
+	@lsof -ti:8000 -ti:5173 | xargs kill -9 2>/dev/null || true
+	@echo "✅ All servers stopped"
