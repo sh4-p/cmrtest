@@ -290,20 +290,20 @@ setup:
 	fi
 	@echo ""
 	@echo "📋 Step 2/6: Installing Composer dependencies..."
-	composer install --no-interaction --prefer-dist --optimize-autoloader
+	/usr/local/bin/composer install --no-interaction --prefer-dist --optimize-autoloader
 	@echo ""
 	@echo "📋 Step 3/6: Installing NPM dependencies..."
 	npm install
 	@echo ""
 	@echo "📋 Step 4/6: Generating application key..."
-	@php artisan key:generate --force
+	/usr/bin/php artisan key:generate --force
 	@echo ""
 	@echo "📋 Step 5/6: Setting up SQLite database..."
 	@touch database/database.sqlite
-	@php artisan migrate:fresh --seed --force
+	/usr/bin/php artisan migrate:fresh --seed --force
 	@echo ""
 	@echo "📋 Step 6/6: Creating storage link..."
-	@php artisan storage:link
+	/usr/bin/php artisan storage:link
 	@echo ""
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@echo "✅ Setup completed!"
